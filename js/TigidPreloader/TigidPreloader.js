@@ -10,6 +10,9 @@ class TigidPreloader{
         this.preloader.bar.barType = config.barType || 'horizontal';
         this.preloader.bar.xPosition = config.xPosition || 'left';
         this.preloader.bar.yPosition = config.yPosition || 'top';
+		
+		this.customInterfaceCallback = config.customInterfaceCallback || null;
+		this.successCallback = config.successCallback || null;
 
         this.images = [].slice.call(this.container.getElementsByTagName('img'));
         this.images.forEach(item => {
@@ -49,8 +52,9 @@ class TigidPreloader{
         this.preloader.bar.classList.add(this.preloaderClassName + '__bar', this.preloader.bar.barType, this.preloader.bar.xPosition, this.preloader.bar.yPosition);
         this.preloader.appendChild(this.preloader.bar);
 
-
         this.container.appendChild(this.preloader);
+		
+		if(this.customInterfaceCallback) this.customInterfaceCallback();
     }
 
     initEvents(){
@@ -65,7 +69,7 @@ class TigidPreloader{
         });
 
         this.preloader.addEventListener('transitionend', (event) => {
-            if(this.target != this.preloader) return;
+            if(event.target != this.preloader) return;
             this.removePreloader();
         })
     }
@@ -92,7 +96,8 @@ class TigidPreloader{
     }
 
     removePreloader(){
-        this.preloader.remove();
+        this.preloader.parentNode.removeChild(this.preloader);
+		if(this.successCallback) this.successCallback();
     }
 
     logString(string){
